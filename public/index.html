@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Notas App</title>
+</head>
+<body>
+    <h1>Notas</h1>
+    <ul id="notas-list"></ul>
+    <input type="text" id="nota-input" placeholder="Escribe una nota">
+    <button onclick="crearNota()">Añadir Nota</button>
+
+    <script>
+        async function obtenerNotas() {
+            const response = await fetch('/api/notas');
+            const data = await response.json();
+            const notasList = document.getElementById('notas-list');
+            notasList.innerHTML = '';
+            data.notas.forEach(nota => {
+                const li = document.createElement('li');
+                li.textContent = nota.contenido;
+                notasList.appendChild(li);
+            });
+        }
+
+        async function crearNota() {
+            const input = document.getElementById('nota-input');
+            const contenido = input.value;
+            await fetch('/api/notas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contenido })
+            });
+            input.value = '';
+            obtenerNotas();
+        }
+
+        obtenerNotas();
+    </script>
+</body>
+</html>
